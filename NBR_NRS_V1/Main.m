@@ -13,7 +13,7 @@ close all;
 
 addpath('./Utils');
 
-% PatSize ±ØĞëÎªÆæÊı
+% PatSize å¿…é¡»ä¸ºå¥‡æ•°
 PatSize = 5;
 k_n = 3;
 
@@ -29,12 +29,12 @@ im_gt = double(im_lab(:,:,1));
 
 [ylen, xlen] = size(im1);
 
-% Çó neighborhood-based ratio image
+% æ±‚ neighborhood-based ratio image
 fprintf(' ... .. compute the neighborhood ratio ..\n');
 nrmap = nr(im1, im2, k_n);
 nrmap = max(nrmap(:))-nrmap;
 nrmap = nr_enhance( nrmap );
-feat_vec = reshape(nrmap, ylen*xlen, 1); %À­³ÉÁĞÏòÁ¿
+feat_vec = reshape(nrmap, ylen*xlen, 1); %æ‹‰æˆåˆ—å‘é‡
 fprintf(' ... .. compute finished !!! !!! !!! !!!!\n\n');
 
 fprintf(' ... .. clustering for sample selection begin ... ....\n');
@@ -44,18 +44,18 @@ fprintf(' ... .. clustering for sample selection finished !!!!!\n\n');
 fprintf(' ... ... ... samples initializaton begin ... ... .....\n');
 fprintf(' ... ... ... Patch Size : %d pixels ... ....\n', PatSize);
 
-% »ñÈ¡ lab ĞÅÏ¢
+% è·å– lab ä¿¡æ¯
 
 pos_lab = find(im_lab == 1);
 neg_lab = find(im_lab == 0);
 tst_lab = find(im_lab == 0.5);
 
-% ¶ÔÕı¸ºÑù±¾´òÂÒË³Ğò
+% å¯¹æ­£è´Ÿæ ·æœ¬æ‰“ä¹±é¡ºåº
 pos_lab = pos_lab(randperm(numel(pos_lab)));
 neg_lab = neg_lab(randperm(numel(neg_lab)));
 [ylen, xlen] = size(im1);
 
-% Í¼ÏñÖÜÎ§ÌîÁã£¬È»ºóÃ¿¸öÏñËØÖÜÎ§È¡Patch£¬±£´æ
+% å›¾åƒå‘¨å›´å¡«é›¶ï¼Œç„¶åæ¯ä¸ªåƒç´ å‘¨å›´å–Patchï¼Œä¿å­˜
 mag = (PatSize-1)/2;
 imTmp = zeros(ylen+PatSize-1, xlen+PatSize-1);
 imTmp((mag+1):end-mag,(mag+1):end-mag) = im1; 
@@ -64,7 +64,7 @@ imTmp((mag+1):end-mag,(mag+1):end-mag) = im2;
 im2 = im2col_general(imTmp, [PatSize, PatSize]);
 clear imTmp mag;
 
-% ºÏ²¢Ñù±¾µ½ im
+% åˆå¹¶æ ·æœ¬åˆ° im
 im1 = mat2imgcell(im1, PatSize, PatSize, 'gray'); 
 im2 = mat2imgcell(im2, PatSize, PatSize, 'gray');
 parfor idx = 1 : numel(im1)  
@@ -79,7 +79,7 @@ NegNum = round(numel(neg_lab)*0.05);
 
 
 
-% È¡³öÕı¸ºÑù±¾Í¼Ïñ¿é
+% å–å‡ºæ­£è´Ÿæ ·æœ¬å›¾åƒå—
 pos_data = im(pos_lab(1:PosNum), :);
 neg_data = im(neg_lab(1:NegNum), :);
 trn_data = [pos_data; neg_data];
@@ -90,8 +90,8 @@ clear PosPat NegPat TraPat TrnLab;
 clear pos_lab neg_lab;
 
 
-% Êµ¼Ê²âÊÔÖĞ·¢ÏÖÕâ¸öËã·¨±È½ÏÂı£¬ËùÒÔ£¬Ö»ÄÜ°Ñ´Ö·ÖÀà½á¹ûÖĞ±êÇ©Îª0.5µÄÊı¾İÈ¡³öÀ´
-% ÕâÑù¼ÆËãĞ§ÂÊ»á¸ßĞ©
+% å®é™…æµ‹è¯•ä¸­å‘ç°è¿™ä¸ªç®—æ³•æ¯”è¾ƒæ…¢ï¼Œæ‰€ä»¥ï¼Œåªèƒ½æŠŠç²—åˆ†ç±»ç»“æœä¸­æ ‡ç­¾ä¸º0.5çš„æ•°æ®å–å‡ºæ¥
+% è¿™æ ·è®¡ç®—æ•ˆç‡ä¼šé«˜äº›
 tst_data = im(tst_lab, :);
 
 lambda = [0.4];
@@ -110,22 +110,17 @@ end
 
 
  [im_lab,num] = bwlabel(~im_lab);
-%  for i = 1:num
-%      idx = find(im_lab==i);
-%      if numel(idx) <= 10
-%          im_lab(idx)=0;
-%      end
-%  end
+
  im_lab = im_lab>0;
 
 [FA,MA,OE,CA] = DAcom(im_gt, im_lab);
-% ±£´æ½á¹û
+% ä¿å­˜ç»“æœ
 fid = fopen('rec.txt', 'a');
 fprintf(fid, 'PatSize = %d\n', PatSize);
-fprintf(fid, 'Ğé¾¯ÏñËØ: %d \n', FA);
-fprintf(fid, 'Â©¼ìÏñËØ: %d \n', MA);
-fprintf(fid, '×ÜÌå´íÎó: %d \n', OE);
-fprintf(fid, '×¼È·ÂÊ:   %f \n\n\n', CA);
+fprintf(fid, 'è™šè­¦åƒç´ : %d \n', FA);
+fprintf(fid, 'æ¼æ£€åƒç´ : %d \n', MA);
+fprintf(fid, 'æ€»ä½“é”™è¯¯: %d \n', OE);
+fprintf(fid, 'å‡†ç¡®ç‡:   %f \n\n\n', CA);
 fclose(fid);
 
 fprintf(' ===== Written change detection results to Res.txt ====\n\n');
